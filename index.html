@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRINTX — 3D-печать на заказ</title>
+<link rel="icon" href="favicon.jpg">
+
+<div class="background-effects">
+  <div class="glow glow-one"></div>
+  <div class="glow glow-two"></div>
+  <div class="glow glow-three"></div>
+</div>
+<style>
+:root {
+  --orange: #ff6b1a;
+  --black: #101010;
+  --card: #1b1b1b;
+  --white: #ffffff;
+  --gray: #aaaaaa;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+  background: #080808;
+  color: #fff;
+}
+
+/* Слой фоновых эффектов */
+.background-effects {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+
+  background-size: 45px 45px;
+}
+
+/* Оранжевое свечение */
+.glow {
+  position: absolute;
+  width: 650px;
+  height: 650px;
+  border-radius: 50%;
+  filter: blur(100px);
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+/* Первое свечение */
+.glow-one {
+  background: radial-gradient(
+    circle,
+    rgba(255, 75, 0, 0.65) 0%,
+    rgba(255, 75, 0, 0.3) 35%,
+    transparent 70%
+  );
+
+  top: -250px;
+  left: -200px;
+
+  animation: moveOne 14s ease-in-out infinite alternate;
+}
+
+/* Второе свечение */
+.glow-two {
+  background: radial-gradient(
+    circle,
+    rgba(255, 115, 25, 0.6) 0%,
+    rgba(255, 75, 0, 0.28) 40%,
+    transparent 70%
+  );
+
+  top: 25%;
+  right: -300px;
+
+  animation: moveTwo 18s ease-in-out infinite alternate;
+}
+
+/* Третье свечение */
+.glow-three {
+  background: radial-gradient(
+    circle,
+    rgba(255, 55, 0, 0.55) 0%,
+    rgba(255, 100, 0, 0.25) 40%,
+    transparent 70%
+  );
+
+  bottom: -350px;
+  left: 25%;
+
+  animation: moveThree 16s ease-in-out infinite alternate;
+}
+
+/* Движение света */
+@keyframes moveOne {
+  0% {
+    transform: translate(0, 0) scale(0.8);
+    opacity: 0.45;
+  }
+
+  50% {
+    transform: translate(250px, 180px) scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(100px, 350px) scale(0.95);
+    opacity: 0.55;
+  }
+}
+
+@keyframes moveTwo {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: translate(-300px, 200px) scale(1.3);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-150px, -150px) scale(0.8);
+    opacity: 0.4;
+  }
+}
+
+@keyframes moveThree {
+  0% {
+    transform: translate(0, 0) scale(0.9);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: translate(200px, -250px) scale(1.25);
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: translate(-200px, -100px) scale(0.85);
+    opacity: 0.5;
+  }
+}
+
+/* На телефонах уменьшаем эффекты */
+@media (max-width: 600px) {
+  .glow {
+    width: 400px;
+    height: 400px;
+    filter: blur(75px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow {
+    animation: none;
+  }
+}
+
+.container {
+  width: min(1120px, 90%);
+  margin: auto;
+}
+
+header {
+  padding: 24px 0;
+  border-bottom: 1px solid #292929;
+}
+
+.logo {
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.logo span {
+  color: var(--orange);
+}
+
+.hero {
+  padding: 100px 0 85px;
+}
+
+.tag {
+  color: var(--orange);
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: clamp(42px, 7vw, 76px);
+  line-height: 1.05;
+  max-width: 850px;
+  margin-bottom: 25px;
+}
+
+h1 span {
+  color: var(--orange);
+}
+
+.hero p {
+  color: var(--gray);
+  max-width: 650px;
+  font-size: 18px;
+  margin-bottom: 32px;
+}
+
+.buttons {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  padding: 14px 28px;
+  background: var(--orange);
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 8px;
+  text-align: center;
+  transition: .2s;
+}
+
+.btn:hover {
+  background: #e9570a;
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--orange);
+  color: var(--orange);
+}
+
+.btn-outline:hover {
+  background: var(--orange);
+  color: white;
+}
+
+section {
+  padding: 70px 0;
+}
+
+.section-title {
+  font-size: clamp(30px, 5vw, 42px);
+  margin-bottom: 12px;
+}
+
+.section-description {
+  color: var(--gray);
+  margin-bottom: 35px;
+}
+
+.materials {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.material-card,
+.service-card,
+.step-card,
+.stl-card {
+  background: var(--card);
+  border: 1px solid #303030;
+  border-radius: 14px;
+  padding: 25px;
+  transition: .2s;
+}
+
+.material-card:hover,
+.service-card:hover,
+.stl-card:hover {
+  border-color: var(--orange);
+  transform: translateY(-4px);
+}
+
+.material-card h3,
+.service-card h3,
+.stl-card h3 {
+  color: var(--orange);
+  margin-bottom: 10px;
+  font-size: 21px;
+}
+
+.material-card p,
+.service-card p,
+.step-card p,
+.stl-card p {
+  color: var(--gray);
+  font-size: 15px;
+}
+
+.services {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.service-number {
+  color: var(--orange);
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.stl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.step-number {
+  color: var(--orange);
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.contacts {
+  background: #191919;
+  border-top: 1px solid #303030;
+  border-bottom: 1px solid #303030;
+}
+
+.contact-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 25px;
+}
+
+.contact-buttons .btn {
+  min-width: 180px;
+}
+
+.note {
+  color: var(--gray);
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+footer {
+  padding: 25px 0;
+  color: var(--gray);
+  font-size: 14px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 800px) {
+  .services {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 70px 0 55px;
+  }
+
+  section {
+    padding: 50px 0;
+  }
+
+  .materials,
+  .services,
+  .stl-grid,
+  .steps {
+    grid-template-columns: 1fr;
+  }
+
+  .buttons,
+  .contact-buttons {
+    flex-direction: column;
+  }
+
+  .buttons .btn,
+  .contact-buttons .btn {
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo">PRINT<span>X</span></div>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="container">
+    <div class="tag">3D-ПЕЧАТЬ НА ЗАКАЗ · ХАБАРОВСК</div>
+
+    <h1>Твои идеи.<br><span>Наша 3D-печать.</span></h1>
+
+    <p>
+      Создаём детали, фигурки, запчасти и полезные вещи
+      на 3D-принтере. Изготовим изделие по фотографии,
+      чертежу, готовой 3D-модели или твоему описанию.
+    </p>
+
+    <div class="buttons">
+      <a href="#services" class="btn">Наши услуги</a>
+      <a href="#contacts" class="btn btn-outline">Связаться с нами</a>
+    </div>
+  </div>
+</section>
+
+<section id="materials">
+  <div class="container">
+    <h2 class="section-title">Материалы для печати</h2>
+    <p class="section-description">
+      Подбираем пластик под назначение и особенности изделия.
+    </p>
+
+    <div class="materials">
+      <div class="material-card">
+        <h3>PLA</h3>
+        <p>
+          Подходит для фигурок, игрушек, декоративных изделий
+          и большинства обычных моделей.
+        </p>
+      </div>
+
+      <div class="material-card">
+        <h3>PETG</h3>
+        <p>
+          Прочный и практичный материал для деталей,
+          корпусов и повседневных изделий.
+        </p>
+      </div>
+
+      <div class="material-card">
+        <h3>TPU</h3>
+        <p>
+          Гибкий материал для эластичных деталей,
+          накладок и других гибких изделий.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="container">
+    <h2 class="section-title">Что мы печатаем</h2>
+    <p class="section-description">
+      Изготавливаем изделия по индивидуальным запросам.
+    </p>
+
+    <div class="services">
+
+      <div class="service-card">
+        <div class="service-number">01 / ФИГУРКИ</div>
+        <h3>Игрушки и фигурки</h3>
+        <p>Персонажи, сувениры, украшения и необычные предметы.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">02 / ПО ФОТО</div>
+        <h3>Детали по фотографии</h3>
+        <p>Поможем изготовить изделие по фотографии и размерам.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">03 / ПО ЧЕРТЕЖУ</div>
+        <h3>Детали по чертежу</h3>
+        <p>Изготовление деталей по чертежам и техническим размерам.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">04 / STL</div>
+        <h3>Печать 3D-моделей</h3>
+        <p>Напечатаем готовую модель в формате STL.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">05 / ЗАПЧАСТИ</div>
+        <h3>Детали и запчасти</h3>
+        <p>Небольшие детали и замены для различных устройств и предметов.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">06 / ДЛЯ ДОМА</div>
+        <h3>Предметы для дома</h3>
+        <p>Органайзеры, держатели, подставки и полезные аксессуары.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">07 / ИНДИВИДУАЛЬНО</div>
+        <h3>Изделия на заказ</h3>
+        <p>Рассмотрим необычные идеи и поможем подобрать вариант изготовления.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">08 / НЕСТАНДАРТ</div>
+        <h3>Нестандартные детали</h3>
+        <p>Изделия по вашим размерам, требованиям и назначению.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="stl">
+  <div class="container">
+    <h2 class="section-title">3D-модели на заказ</h2>
+    <p class="section-description">
+      Нет готовой модели? Обсудим идею и возможность её создания.
+    </p>
+
+    <div class="stl-grid">
+      <div class="stl-card">
+        <h3>По фотографии</h3>
+        <p>Покажите пример изделия, которое хотите получить.</p>
+      </div>
+
+      <div class="stl-card">
+        <h3>По чертежу</h3>
+        <p>Отправьте чертёж с размерами и необходимыми параметрами.</p>
+      </div>
+
+      <div class="stl-card">
+        <h3>По описанию</h3><p>Расскажите о своей задумке и желаемом результате.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="order">
+  <div class="container">
+    <h2 class="section-title">Как заказать</h2>
+    <p class="section-description">
+      Всего четыре простых шага.
+    </p>
+
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <h3>Напишите нам</h3>
+        <p>Свяжитесь с нами через MAX или Telegram.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <h3>Отправьте материалы</h3>
+        <p>Пришлите фото, чертёж, описание или STL-файл.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <h3>Согласуйте заказ</h3>
+        <p>Обсудим стоимость, материал и сроки изготовления.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">04</div>
+        <h3>Получите изделие</h3>
+        <p>После изготовления согласуем получение заказа в Хабаровске.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contacts" id="contacts">
+  <div class="container">
+    <h2 class="section-title">Есть идея? Давайте воплотим её!</h2>
+
+    <p class="section-description">
+      Напишите нам, расскажите о своей задумке.
+    </p>
+
+    <div class="contact-buttons">
+      <a class="btn"
+         href="https://max.ru/u/f9LHodD0cOLP-yBfrJhs-9GWN4hoEHpvC6JWqmsqnbHvmxa6awjOXscKt_A"
+         target="_blank" rel="noopener noreferrer">
+        Написать в MAX
+      </a>
+
+      <a class="btn"
+         href="https://t.me/PrintX56"
+         target="_blank" rel="noopener noreferrer">
+        Написать в Telegram
+      </a>
+    </div>
+
+    <p class="note">
+      Доставка и получение заказов — только по городу Хабаровску.
+      Стоимость и сроки обсуждаются индивидуально.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container footer-content">
+    <div><strong>PRINT<span style="color:#ff6b1a">X</span></strong> — 3D-печать на заказ</div>
+    <div>© 2026 PRINTX</div>
+  </div>
+</footer>
+
+</body>
+</html>
